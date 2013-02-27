@@ -15,15 +15,31 @@ public class NIOSocketClient {
 	/**
 	 * 命令String
 	 */
-	public static ArrayList<String>  orders = new ArrayList<String>();
-	
+	public static ArrayList<String> orders = new ArrayList<String>();
+
+	/**
+	 * 
+	 */
+	public static void main(String[] args) {
+		loadOrder();
+		for (int i = 0; i < orders.size(); i++) {
+			try {
+				pub(orders.get(i));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * 
 	 * @param args
 	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws IOException {
-		loadOrder();
+	public static void pub(String msg) throws IOException {
+
 		SocketChannel sc = SocketChannel.open();
 		Selector sel = Selector.open();
 		try {
@@ -62,20 +78,20 @@ public class NIOSocketClient {
 							String response = cs
 									.decode((ByteBuffer) buf.flip()).toString();
 							System.out.println(response);
-							if (response.indexOf("\r\r\rEND\n") != -1)
+							if (response.indexOf("\r\r\rEND\r\r\r") != -1)
 								done = true;
 						}
 					}
 					// 如果通道选择器产生写入操作已准备好事件，并且尚未想通道写入数据
 					if (key.isWritable()) {
 						// 向套接字通道中写入数据
-							sc.write(ByteBuffer.wrap(new String(orders.get(i)).getBytes()));
-							sc.write(ByteBuffer.wrap(new String("\r\r\rEND\n")
-									.getBytes()));
+						sc.write(ByteBuffer.wrap(new String(orders.get(i))
+								.getBytes()));
+						sc.write(ByteBuffer.wrap(new String("\r\r\rEND\r\r\r")
+								.getBytes()));
 						i++;
-						if(i == orders.size()){
-							done = true;
-						}
+						done = true;
+						sc.finishConnect();
 					}
 				}
 			}
@@ -84,10 +100,10 @@ public class NIOSocketClient {
 			sel.close();
 		}
 	}
-	
-	public static void loadOrder(){
+
+	public static void loadOrder() {
 		// 数据结构 voteSerialNo\r\r\n\nsign\r\r\n\nmsgKing\r\r\n\nMsg
-		//127.0.0.1_6379_pub_sub_0
+		// 127.0.0.1_6379_pub_sub_0
 		orders.add("0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\rNO\r:\r1");
 		orders.add("0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\rNO\r:\r1");
 		orders.add("0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\rNO\r:\r1");
