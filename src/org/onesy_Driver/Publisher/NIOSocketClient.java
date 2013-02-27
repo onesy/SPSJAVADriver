@@ -32,7 +32,6 @@ public class NIOSocketClient {
 			sc.register(sel, SelectionKey.OP_READ | SelectionKey.OP_WRITE
 					| SelectionKey.OP_CONNECT);
 			int i = 0;
-			boolean written = false;
 			boolean done = false;
 			String encoding = System.getProperty("file.encoding");
 			Charset cs = Charset.forName(encoding);
@@ -57,27 +56,26 @@ public class NIOSocketClient {
 							sc.finishConnect();
 					}
 					// 如果通道选择器产生读取操作已准备好事件，且已经向通道写入数据
-					if (key.isReadable() && written) {
+					if (key.isReadable()) {
 						if (sc.read((ByteBuffer) buf.clear()) > 0) {
-							written = false;
 							// 从套接字通道中读取数据
 							String response = cs
 									.decode((ByteBuffer) buf.flip()).toString();
 							System.out.println(response);
-							if (response.indexOf("\r\r\rEND") != -1)
+							if (response.indexOf("\r\r\rEND\n") != -1)
 								done = true;
 						}
 					}
 					// 如果通道选择器产生写入操作已准备好事件，并且尚未想通道写入数据
-					if (key.isWritable() && !written) {
+					if (key.isWritable()) {
 						// 向套接字通道中写入数据
-						byte[] barray = new byte[1024];
-						ByteBuffer bb = ByteBuffer.allocate(1024);
 							sc.write(ByteBuffer.wrap(new String(orders.get(i)).getBytes()));
-							sc.write(ByteBuffer.wrap(new String("\r\r\rEND")
+							sc.write(ByteBuffer.wrap(new String("\r\r\rEND\n")
 									.getBytes()));
-						written = true;
 						i++;
+						if(i == orders.size()){
+							done = true;
+						}
 					}
 				}
 			}
