@@ -118,11 +118,13 @@ public class NIOSocketClient {
 	}
 
 	public static void loadOrder() {
-		// 数据结构 voteSerialNo\r\r\n\nsign\r\r\r\rmsgKing\r\r\risOrigin\r\r\rMsg
+		// 数据结构 voteSerialNo\r\r\n\nsign\r\r\r\rmsgKing\r\r\rTransactionnNo\r\r\risOrigin\r\r\rMsg
 		// 127.0.0.1_6379_pub_sub_0
-		orders.add(0,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rmyname\r:\rbinp");
-		orders.add(1,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rhengl\r:\rluoheng");
-		orders.add(2,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rbinp\r:\rpangbing");
+//		orders.add(0,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rConfirmOrder\r\r\r0\r\r\r1\r\r\rmyname\r:\rbinp");
+		orders.add(0,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rhengl\r:\rluoheng");
+//		orders.add(1,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rhengl\r:\rluoheng");
+//		orders.add(2,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rbinp\r:\rpangbing");
+		
 //		orders.add(3,"END");
 //		orders.add(3,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rNO\r:\r2");
 
