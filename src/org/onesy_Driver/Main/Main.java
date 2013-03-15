@@ -9,7 +9,6 @@ public class Main {
 		// TODO Auto-generated method stub
 		// 数据结构 voteSerialNo\r\r\n\nsign\r\r\n\nmsgKing\r\r\n\nMsg
 		System.err.println(System.currentTimeMillis());
-		System.err.println(1309692922);
 		
 	}
 

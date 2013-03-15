@@ -121,7 +121,9 @@ public class NIOSocketClient {
 		// 数据结构 voteSerialNo\r\r\n\nsign\r\r\r\rmsgKing\r\r\rTransactionnNo\r\r\risOrigin\r\r\rMsg
 		// 127.0.0.1_6379_pub_sub_0
 //		orders.add(0,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rConfirmOrder\r\r\r0\r\r\r1\r\r\rmyname\r:\rbinp");
-		orders.add(0,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rhengl\r:\rluoheng");
+		for(int i = 0 ; i < 1; i ++ ){
+			orders.add(i,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r" + i+"\r\r\r0\r\r\rhengl1\r:\rluoheng" + i);
+		}
 //		orders.add(1,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rhengl\r:\rluoheng");
 //		orders.add(2,"0\r\r\r127.0.0.1_6379_pub_sub_0\r\r\rSetKVOrder\r\r\r0\r\r\r1\r\r\rbinp\r:\rpangbing");
 		
