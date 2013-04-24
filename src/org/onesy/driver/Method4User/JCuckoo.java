@@ -3,6 +3,8 @@ package org.onesy.driver.Method4User;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
+import org.onesy.driver.ExchangeArea.OrderQ;
+import org.onesy.driver.ExchangeArea.RTNWindow;
 import org.onesy_driver.Bean.NodeBean;
 
 public class JCuckoo {
@@ -11,8 +13,13 @@ public class JCuckoo {
 
 	private static NodeBean nodeBean = null;
 
-	public static final String SEPERATOR = "\r\r\r";
+	/**
+	 * 通信结束符
+	 */
+	public static final String ConnectEND = "\r\r\rEND";
 	
+	public static final String SEPERATOR = "\r\r\r";
+
 	public static final String EQUALSEPERATOR = "\r:\r";
 
 	/**
@@ -23,10 +30,13 @@ public class JCuckoo {
 	// ------------------发送相关
 	// 目前驱动监听端口是在10997号发送端口可以自行决定
 	// 服务器的host
-	private static String host;
+	public static String host;
 
 	// 服务器的监听端口
-	private static int port;
+	public static int lport;
+	
+	// 驱动发送的端口
+	public static int pport;
 
 	// 消息的种类
 	private static String msgCategory;
@@ -39,9 +49,9 @@ public class JCuckoo {
 	// 本节点的transactionNo
 	private static long transationNo;
 
-	private static int listenPort;
+	public static int listenPort;
 
-	private static int sendPort;
+	public static int sendPort;
 
 	private static String localhost;
 
@@ -81,11 +91,28 @@ public class JCuckoo {
 
 	public synchronized static void SetKV(Object key, Object value) {
 		JCuckoo.msgCategory = "SetKV";
-		String setQuery  = key.toString() + EQUALSEPERATOR + value.toString();
-		String Query = MsgBuildUper(VoteSerialNo, JCuckoo.nodeBean.getSign(), JCuckoo.msgCategory, transationNo, 0, setQuery);
-		
-
+		String setQuery = key.toString() + EQUALSEPERATOR + value.toString();
+		String Query = MsgBuildUper(VoteSerialNo, JCuckoo.nodeBean.getSign(),
+				JCuckoo.msgCategory, transationNo, 0, setQuery);
+		OrderQ.AddOrder(Query);
+		// 调用完成，并不保证每个都成功,但是只要进入了集群，集群就会想办法插入这个值。
 	}
+	
+	public synchronized static String GetV(Object key){
+		String getQuery = null;
+		String rtn = null;
+		long tran = 0;
+		JCuckoo.msgCategory = "GetV";
+		getQuery = key.toString();
+		OrderQ.AddOrder(MsgBuildUper(VoteSerialNo, JCuckoo.nodeBean.getSign(),
+				JCuckoo.msgCategory, transationNo, 0, getQuery));
+		tran = transationNo;
+		transationNo ++;
+		rtn = RTNWindow.addRTNBean(tran, -1).getRTNConten(-1);
+		return rtn;
+	}
+	
+	//private static Object 
 
 	// 数据结构
 	// voteSerialNo\r\r\n\nsign\r\r\rmsgKing\r\r\rTransactionnNo\r\r\risOrigin\r\r\rMsg
