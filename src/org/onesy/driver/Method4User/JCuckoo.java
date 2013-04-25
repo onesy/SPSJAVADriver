@@ -17,10 +17,12 @@ public class JCuckoo {
 	 * 通信结束符
 	 */
 	public static final String ConnectEND = "\r\r\rEND";
-	
+
 	public static final String SEPERATOR = "\r\r\r";
 
 	public static final String EQUALSEPERATOR = "\r:\r";
+
+	public static final String PAIRSEPERATOR = "\n:\n";
 
 	/**
 	 * 选举序列号
@@ -34,7 +36,7 @@ public class JCuckoo {
 
 	// 服务器的监听端口
 	public static int lport;
-	
+
 	// 驱动发送的端口
 	public static int pport;
 
@@ -55,11 +57,14 @@ public class JCuckoo {
 
 	private static String localhost;
 
+	private static String sign;
+
 	/**
 	 * 
 	 */
 	private JCuckoo(String host, int db, int redisport, int listenPort,
 			int sendPort) {
+		JCuckoo.sign = host + "_" + listenPort + "_" + sendPort;
 		transationNo = 0l;
 		JCuckoo.listenPort = listenPort;
 		JCuckoo.sendPort = sendPort;
@@ -97,22 +102,36 @@ public class JCuckoo {
 		OrderQ.AddOrder(Query);
 		// 调用完成，并不保证每个都成功,但是只要进入了集群，集群就会想办法插入这个值。
 	}
-	
-	public synchronized static String GetV(Object key){
+
+	public synchronized static String GetV(Object key) {
 		String getQuery = null;
 		String rtn = null;
 		long tran = 0;
 		JCuckoo.msgCategory = "GetV";
-		getQuery = key.toString();
+		getQuery = "key" + JCuckoo.EQUALSEPERATOR + key.toString()
+				+ JCuckoo.PAIRSEPERATOR + "Client_Info"
+				+ JCuckoo.EQUALSEPERATOR + JCuckoo.sign;
 		OrderQ.AddOrder(MsgBuildUper(VoteSerialNo, JCuckoo.nodeBean.getSign(),
 				JCuckoo.msgCategory, transationNo, 0, getQuery));
 		tran = transationNo;
-		transationNo ++;
+		transationNo++;
 		rtn = RTNWindow.addRTNBean(tran, -1).getRTNConten(-1);
 		return rtn;
 	}
-	
-	//private static Object 
+
+	public synchronized static boolean RegisteDriver(String host,
+			int listenport, int sendport) {
+		boolean issuccess = false;
+		String registerQueryString;
+		registerQueryString = "host" + JCuckoo.EQUALSEPERATOR + host
+				+ JCuckoo.PAIRSEPERATOR + "listenport" + JCuckoo.EQUALSEPERATOR
+				+ listenport + JCuckoo.PAIRSEPERATOR + "sendport"
+				+ JCuckoo.EQUALSEPERATOR + sendport;
+
+		return issuccess;
+	}
+
+	// private static Object
 
 	// 数据结构
 	// voteSerialNo\r\r\n\nsign\r\r\rmsgKing\r\r\rTransactionnNo\r\r\risOrigin\r\r\rMsg
