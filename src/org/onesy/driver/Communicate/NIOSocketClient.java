@@ -48,11 +48,12 @@ public class NIOSocketClient {
 					// 通道尚未连接到服务端套接字通道
 					if (key.isConnectable() && !sc.isConnected()) {
 						InetAddress addr = InetAddress
-								.getByName(JCuckoo.host/*相应者的host*/);
+								.getByName(JCuckoo.host/*响应者的host*/);
 						// 客户端套接字通道向服务端套接字通道发起非阻塞连接
 						Thread.sleep(5);
+						System.err.println("发起链接:" + addr + ":" + JCuckoo.lport);
 						boolean success = sc.connect(new InetSocketAddress(
-								addr, JCuckoo.lport));
+								addr, JCuckoo.lport));//响应者的监听端口，不一定是真的相应者，这里只需要一个代理充当响应者
 						// 如果客户端没有立即连接到服务端，则客户端完成非立即连接操作
 						if (!success)
 							sc.finishConnect();
@@ -71,6 +72,7 @@ public class NIOSocketClient {
 					// 如果通道选择器产生写入操作已准备好事件，并且尚未想通道写入数据
 					if (key.isWritable()) {
 						// 向套接字通道中写入数据
+						System.out.println(order);
 						sc.write(ByteBuffer.wrap(new String(order
 								+ JCuckoo.ConnectEND
 								+ "\r\r\rEND\r\r\r").getBytes()));
@@ -86,6 +88,7 @@ public class NIOSocketClient {
 			}
 		} catch (BindException e) {
 			// TODO: handle exception
+			e.printStackTrace();
 			
 		} catch (Exception e) {
 			// TODO: handle exception

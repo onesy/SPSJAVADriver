@@ -14,7 +14,11 @@ public class RTNWindow {
 		return rtn;
 	}
 	
-	public static void ContentRTN(long Transaction, String content){
-		RTNWindows.get(Transaction).fillContent(content);
+	public static void ContentRTN(long Transanction, String content){
+		RTNWindows.get(Transanction).fillContent(content);
+	}
+	
+	public static void DelRTNBean(long Transanction){
+		RTNWindows.remove(Transanction);
 	}
 }

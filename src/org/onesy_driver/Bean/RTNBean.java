@@ -1,5 +1,10 @@
 package org.onesy_driver.Bean;
 
+import java.util.HashMap;
+
+import org.onesy.driver.ExchangeArea.RTNWindow;
+import org.onesy.driver.Method4User.JCuckoo;
+
 public class RTNBean extends BeanBase {
 
 	public long transactionNo;
@@ -37,7 +42,7 @@ public class RTNBean extends BeanBase {
 	}
 
 	/**
-	 * restTime millisecond
+	 * restTime millisecond, -1 stand for no rest time
 	 * 
 	 * @param restTime
 	 * @return
@@ -61,14 +66,21 @@ public class RTNBean extends BeanBase {
 	/**
 	 * 直接处理返回的数据
 	 */
-	public static void processRTNContent(String receiveMsg){
+	public synchronized static void processRTNContent(String receiveMsg){
 		/** 第一步，分离出content
 		 *  第二步，分离出transaction
 		 *  第三步，向RTNWindow中添加这个transaction对应的数据。
 		 *  第四步，退出
 		 */
-		
-		
+		String MsgContent = receiveMsg.split(JCuckoo.SEPERATOR)[5];
+		HashMap<String, String> MsgKV = new HashMap<String, String>();
+		String[] pairs = MsgContent.split(JCuckoo.PAIRSEPERATOR);
+		for( String pair : pairs){
+			String key = pair.split(JCuckoo.EQUALSEPERATOR)[0];
+			String value = pair.split(JCuckoo.EQUALSEPERATOR)[1];
+			MsgKV.put(key, value);
+		}
+		RTNWindow.ContentRTN(Long.parseLong(MsgKV.get("transactionNo")), MsgKV.get("value"));
 	}
 
 }

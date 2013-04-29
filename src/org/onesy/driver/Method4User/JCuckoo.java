@@ -93,8 +93,13 @@ public class JCuckoo {
 		}
 		return JCuckoo.jCuckoo;
 	}
+	
+	public synchronized void initParams(int lport,int pport){
+		JCuckoo.lport = lport;
+		JCuckoo.pport = pport;
+	}
 
-	public synchronized static void SetKV(Object key, Object value) {
+	public synchronized void SetKV(Object key, Object value) {
 		JCuckoo.msgCategory = "SetKV";
 		String setQuery = key.toString() + EQUALSEPERATOR + value.toString();
 		String Query = MsgBuildUper(VoteSerialNo, JCuckoo.nodeBean.getSign(),
@@ -103,7 +108,7 @@ public class JCuckoo {
 		// 调用完成，并不保证每个都成功,但是只要进入了集群，集群就会想办法插入这个值。
 	}
 
-	public synchronized static String GetV(Object key) {
+	public synchronized String GetV(Object key) {
 		String getQuery = null;
 		String rtn = null;
 		long tran = 0;
@@ -111,25 +116,16 @@ public class JCuckoo {
 		getQuery = "key" + JCuckoo.EQUALSEPERATOR + key.toString()
 				+ JCuckoo.PAIRSEPERATOR + "Client_Info"
 				+ JCuckoo.EQUALSEPERATOR + JCuckoo.sign;
-		OrderQ.AddOrder(MsgBuildUper(VoteSerialNo, JCuckoo.nodeBean.getSign(),
-				JCuckoo.msgCategory, transationNo, 0, getQuery));
+		String Order = MsgBuildUper(VoteSerialNo, JCuckoo.nodeBean.getSign(),
+				JCuckoo.msgCategory, transationNo, 0, getQuery);
+		OrderQ.AddOrder(Order);
 		tran = transationNo;
 		transationNo++;
 		rtn = RTNWindow.addRTNBean(tran, -1).getRTNConten(-1);
+		System.out.println("rtn 返回");
 		return rtn;
 	}
 
-	public synchronized static boolean RegisteDriver(String host,
-			int listenport, int sendport) {
-		boolean issuccess = false;
-		String registerQueryString;
-		registerQueryString = "host" + JCuckoo.EQUALSEPERATOR + host
-				+ JCuckoo.PAIRSEPERATOR + "listenport" + JCuckoo.EQUALSEPERATOR
-				+ listenport + JCuckoo.PAIRSEPERATOR + "sendport"
-				+ JCuckoo.EQUALSEPERATOR + sendport;
-
-		return issuccess;
-	}
 
 	// private static Object
 
@@ -138,7 +134,7 @@ public class JCuckoo {
 	public synchronized static String MsgBuildUper(long voteNo, String sign,
 			String MsgCategory, long TransactionNo, int isOrigin, String Msg) {
 		return voteNo + SEPERATOR + sign + SEPERATOR + MsgCategory + SEPERATOR
-				+ TransactionNo + SEPERATOR + isOrigin + SEPERATOR + msg;
+				+ TransactionNo + SEPERATOR + isOrigin + SEPERATOR + Msg;
 	}
 
 }
